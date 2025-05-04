@@ -1,0 +1,176 @@
+
+# Yanni G
+# t-800
+# Vexcode v5
+# 4/3/25
+
+
+from vex import*
+
+# brain 
+brain = Brain()
+
+# motors 
+leftMotor = Motor(Ports.PORT1)
+rightMotor = Motor(Ports.PORT2, True)
+armMotor = Motor(Ports.PORT3)
+clawMotor = Motor(Ports.PORT4)
+
+# bumper sensors
+bumper_1 = Bumper(brain.three_wire_port.a)
+bumper_2 = Bumper(brain.three_wire_port.b)
+
+# foward
+def drive_forward(time, speed=30):
+    leftMotor.set_velocity(speed,PERCENT)
+    rightMotor.set_velocity(speed,PERCENT)
+    leftMotor.spin(FORWARD)
+    rightMotor.spin(FORWARD)
+    wait(time, SECONDS)
+    leftMotor.stop()
+    rightMotor.stop()
+# left
+def turn_left(time, speed=30):
+    leftMotor.set_velocity(-speed,PERCENT)
+    rightMotor.set_velocity(speed,PERCENT)
+    leftMotor.spin(FORWARD)
+    rightMotor.spin(FORWARD)
+    wait(time, SECONDS)
+    leftMotor.stop()
+    rightMotor.stop()
+# right 
+def turn_right(time, speed=30):
+    leftMotor.set_velocity(speed, PERCENT)
+    rightMotor.set_velocity(-speed, PERCENT)
+    leftMotor.spin(FORWARD)
+    rightMotor.spin(FORWARD)
+    wait(time, SECONDS)
+    leftMotor.stop()
+    rightMotor.stop()
+
+# claw
+def open_claw():
+    clawMotor.spin_for(REVERSE,1.5, SECONDS)
+def close_claw():
+    clawMotor.spin_for(FORWARD,1.5,SECONDS)
+    clawMotor.set_stopping(HOLD)
+
+# arm
+def raise_arm():
+    armMotor.spin_for(FORWARD,300,DEGREES)
+    armMotor.set_stopping(HOLD)
+def lower_arm():
+    armMotor.spin_for(REVERSE,300,DEGREES)
+    armMotor.set_stopping(HOLD)
+
+# start 
+brain.screen.print("T-800 Online")
+
+# raises arm so bottom sensor can be pressed
+raise_arm()
+
+# dives fowerd to pick up bottle
+rightMotor.set_velocity(20,PERCENT) 
+leftMotor.set_velocity(20,PERCENT)
+rightMotor.spin(FORWARD)
+leftMotor.spin(FORWARD)
+
+# waits till a bumper is pressed 
+while True:
+    if bumper_1.pressing():
+        brain.screen.print("Front bumper hit")
+        break
+    elif bumper_2.pressing():
+        brain.screen.print("Right bumper hit")
+        turn_right(0.3) 
+        break
+    wait(0.1,SECONDS)
+
+# stop motors
+leftMotor.stop()
+rightMotor.stop()
+
+# backs up a little to help it pick up
+leftMotor.set_velocity(-25,PERCENT)
+rightMotor.set_velocity(-25,PERCENT)
+leftMotor.spin(FORWARD)
+rightMotor.spin(FORWARD)
+wait(0.5,SECONDS)
+leftMotor.stop()
+rightMotor.stop()
+
+#picks up 
+open_claw()
+lower_arm()
+close_claw()
+raise_arm()
+
+#turn left and move to bin
+turn_left(0.7)
+drive_forward(1)
+#drps 
+lower_arm()
+open_claw()
+raise_arm()
+close_claw()
+# backs up 
+leftMotor.set_velocity(-25,PERCENT)
+rightMotor.set_velocity(-25,PERCENT)
+leftMotor.spin(FORWARD)
+rightMotor.spin(FORWARD)
+wait(0.5,SECONDS)
+leftMotor.stop()
+rightMotor.stop()
+
+# turns left 
+turn_left(1.8)
+# dives fowerd to pick up bottle 
+leftMotor.set_velocity(20,PERCENT)
+rightMotor.set_velocity(20,PERCENT)
+leftMotor.spin(FORWARD)
+rightMotor.spin(FORWARD)
+
+
+# waits till bumper pressed 
+while True:
+    if bumper_1.pressing():
+        brain.screen.print("Front bumper hit")
+        break
+    elif bumper_2.pressing():
+        brain.screen.print("Right side hit adjusting")
+        turn_right(0.5)  
+        break
+    wait(0.1, SECONDS)
+#stop
+leftMotor.stop()
+rightMotor.stop()
+# backs up a little to help it pick up
+leftMotor.set_velocity(-23,PERCENT)
+rightMotor.set_velocity(-23,PERCENT)
+leftMotor.spin(FORWARD)
+rightMotor.spin(FORWARD)
+wait(0.5,SECONDS)
+leftMotor.stop()
+rightMotor.stop()
+
+#picks up 
+open_claw()
+lower_arm()
+close_claw()
+raise_arm()
+
+#turns and head to bin 
+
+turn_right(1.6)
+drive_forward(2.2)
+
+#dorps 
+lower_arm()
+open_claw()
+raise_arm()
+close_claw()
+
+#end
+brain.screen.clear_screen()
+brain.screen.print("Item Exterminated")
+
